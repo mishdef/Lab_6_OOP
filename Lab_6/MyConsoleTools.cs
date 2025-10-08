@@ -294,8 +294,14 @@ namespace MyFunctions
     public static class Menu
     {
         public static ConsoleColor SelectedItemColor = ConsoleColor.Yellow;
-        public static string SelectionArrow = "-> ";
+        public static string SelectionArrow = " -> ";
+        public static string EscapeChar = "<< Esc";
+        public static string EnterChar = ">> Enter";
+        public static int Spacing = 4;
         public static bool EnableBeepOnError = true;
+        public static int StartIndex = 1;
+        public static ConsoleColor ButtonEnterColor = ConsoleColor.DarkGray;
+        public static ConsoleColor ButtonEscapeColor = ConsoleColor.DarkGray;
 
         public static void PerformBeep()
         {
@@ -312,7 +318,7 @@ namespace MyFunctions
 
             int menuStartLine = Console.CursorTop;
 
-            int selectedIndex = 0;
+            int selectedIndex = 1 - StartIndex;
             int lastDigitPressedIndex = -1;
 
             Console.CursorVisible = false;
@@ -328,9 +334,9 @@ namespace MyFunctions
                 else
                 {
                     Console.ResetColor();
-                    Console.Write("   ");
+                    Console.Write(new string(' ', Spacing));
                 }
-                Console.WriteLine($"{i + 1}. {items[i]}");
+                Console.WriteLine($"{i + StartIndex}. {items[i]}");
             }
             Console.ResetColor();
             if (showHowToUse)
@@ -399,6 +405,9 @@ namespace MyFunctions
                 {
                     Console.CursorVisible = true;
                     Console.SetCursorPosition(0, finalCursorPositionAfterMenu);
+                    Console.ForegroundColor = ButtonEnterColor;
+                    Console.WriteLine(EnterChar);
+                    Console.ResetColor();
                     Console.WriteLine();
 
                     return selectedIndex + 1;
@@ -407,7 +416,10 @@ namespace MyFunctions
                 {
                     Console.CursorVisible = true;
                     Console.SetCursorPosition(0, finalCursorPositionAfterMenu);
-                    Console.WriteLine(" -> Esc");
+                    Console.ForegroundColor = ButtonEscapeColor;
+                    Console.WriteLine(EscapeChar);
+                    Console.ResetColor();
+                    Console.WriteLine();
                     return -1;
                 }
                 else if (char.IsDigit(keyInfo.KeyChar))
@@ -453,13 +465,13 @@ namespace MyFunctions
                 {
                     Console.SetCursorPosition(0, menuStartLine + oldSelectedIndex);
                     Console.ResetColor();
-                    Console.Write("   ");
-                    Console.Write($"{oldSelectedIndex + 1}. {items[oldSelectedIndex]}");
+                    Console.Write(new string(' ', Spacing));
+                    Console.Write($"{oldSelectedIndex + StartIndex}. {items[oldSelectedIndex]}{new string(' ', SelectionArrow.Length + Spacing)}");
 
                     Console.SetCursorPosition(0, menuStartLine + selectedIndex);
                     Console.ForegroundColor = SelectedItemColor;
                     Console.Write(SelectionArrow);
-                    Console.Write($"{selectedIndex + 1}. {items[selectedIndex]}");
+                    Console.Write($"{selectedIndex + StartIndex}. {items[selectedIndex]}{new string(' ', SelectionArrow.Length + Spacing)}");
                     Console.ResetColor();
                 }
 

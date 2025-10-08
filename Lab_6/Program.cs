@@ -4,15 +4,21 @@ using static MyFunctions.Tools;
 
 namespace Lab_6
 {
-    internal class Program
+    public class Program
     {
-        static Car[] cars = new Car[0];
-        static int maxCapacity;
+        public static List <Car> cars = new List<Car>();
+        public static int maxCapacity;
 
         static void Main(string[] args)
         {
             Menu.EnableBeepOnError = false;
+            MessageBox.SelectedButtonBgColor = ConsoleColor.Gray;
+            MessageBox.SelectedButtonFgColor = ConsoleColor.Black;
             Console.OutputEncoding = System.Text.Encoding.UTF8;
+            Console.WindowWidth = 160;
+            Console.WindowHeight = 50;
+            Console.BufferWidth = 160;
+
             bool firstRun = true;
 
             maxCapacity = InputInt("Enter the maximum number of cars this storage can hold (1-100): ", InputType.With, 1, 100);
@@ -54,8 +60,20 @@ namespace Lab_6
                             AddSeedData();
                             break;
                         case -1:
-                            Console.WriteLine("Goodbye! :)");
-                            return;
+                            if (MessageBox.Show("Are you shoore? Perform exit?", "Question", MessageBox.Buttons.YesNo) == MessageBox.Button.Yes)
+                            {
+                                Console.WriteLine(
+                                    "\n" +
+                                    "██████████                      ██  ██\r\n" +
+                                    "██                              ██  ██\r\n" +
+                                    "██  ██████  ██████  ██████  ██████  ██████  ██  ██  ██████\r\n" +
+                                    "██      ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██  ██\r\n" +
+                                    "██████████  ██████  ██████  ██████  ██████  ██████  ██████\r\n" +
+                                    "                                                ██  ██\r\n" +
+                                    "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  ██████  ██████    ██  ██  ██\n");
+                                return;
+                            }
+                            break;
                     }
                     firstRun = false;
                 }
@@ -68,54 +86,60 @@ namespace Lab_6
 
         static void DemonstrateStaticMethods()
         {
-            try
+            do
             {
-                switch(Menu.DisplayMenu("STATIC MENU", new[] {
-                    "Show statistics", 
-                    "Show fuel price", 
-                    "Change fuel price", 
-                    "Show count", 
-                    "Reset statistics"}, 
-                    allowLooping: true, showHowToUse: false))
+                try
                 {
-                    case -1:
-                        return;
-                    case 1:
-                        Console.WriteLine(Car.ShowCountres());
-                        break;
-                    case 2:
-                        Console.WriteLine($"Fuel price: {Car.FuelPrice}$ per liter.");
-                        break;
-                    case 3:
-                        do
-                        {
-                            try
+                    switch (Menu.DisplayMenu("STATIC MENU", new[] {
+                    "Show statistics",
+                    "Show fuel price",
+                    "Change fuel price",
+                    "Show count",
+                    "Reset statistics"},
+                        allowLooping: true, showHowToUse: false))
+                    {
+                        case -1:
+                            return;
+                        case 1:
+                            Console.WriteLine(Car.ShowCountres());
+                            break;
+                        case 2:
+                            Console.WriteLine($"Fuel price: {Car.FuelPrice}$ per liter.");
+                            break;
+                        case 3:
+                            do
                             {
-                                int newPrice = InputInt("Enter new fuel price: ");
-                                Car.FuelPrice = newPrice;
-                                break;
-                            }catch (Exception ex) {
-                                Console.WriteLine(ex.Message);
-                            }
-                        } while (true);
-                        break;
-                    case 4:
-                        Console.WriteLine($"Total cars count: {Car.Count}");
-                        break;
-                    case 5:
-                        Car.ResetCountres();
-                        Console.WriteLine("Statistics cleared.");
-                        break;
+                                try
+                                {
+                                    int newPrice = InputInt("Enter new fuel price: ");
+                                    Car.FuelPrice = newPrice;
+                                    break;
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine(ex.Message);
+                                }
+                            } while (true);
+                            break;
+                        case 4:
+                            Console.WriteLine($"Total cars count: {Car.Count}");
+                            break;
+                        case 5:
+                            Car.ResetCountres();
+                            Console.WriteLine("Statistics cleared.");
+                            break;
+                    }
                 }
-            }catch(Exception ex)
-            {
-                Console.WriteLine("ERROR: " + ex.Message);
-            }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("ERROR: " + ex.Message);
+                }
+            } while (true);
         }
 
         static public void AddSeedData() //cheat code
         {
-            if (cars.Length >= maxCapacity)
+            if (cars.Count >= maxCapacity)
             {
                 Console.WriteLine("Storage is full, cannot add seed data.");
                 return;
@@ -130,14 +154,14 @@ namespace Lab_6
             new { Mark = "Ford", Model = "F-150", Color = Color.Black, HorsePower = 400f, Weight = 2500m, Milage = 25000.0, FuelConsumptionPer100km = 24.0, FuelCapacity = 120.0, ProductionDate = new DateTime(2021, 1, 1), NumberOfDoors = 4 }
         };
 
-            int initialCarsCount = cars.Length;
+            int initialCarsCount = cars.Count;
             int carsAddedCount = 0;
 
             foreach (var item in seedDataItems)
             {
-                if (cars.Length < maxCapacity)
+                if (cars.Count < maxCapacity)
                 {
-                    AddCar(item.Mark, item.Model, item.Color, item.HorsePower, item.Weight, item.Milage, item.FuelConsumptionPer100km, item.FuelCapacity, item.ProductionDate, item.NumberOfDoors);
+                    cars.Add(new Car(item.Mark, item.Model, item.Color, item.HorsePower, item.Weight, item.Milage, item.FuelCapacity, item.ProductionDate, item.FuelConsumptionPer100km, item.NumberOfDoors));
                     carsAddedCount++;
                 }
                 else
@@ -152,7 +176,7 @@ namespace Lab_6
                 Console.WriteLine($"{carsAddedCount} cars added from seed data.");
                 Console.WriteLine("CHEAT CODE ACTIVATED: Seed data added.");
             }
-            else if (initialCarsCount == cars.Length)
+            else if (initialCarsCount == cars.Count)
             {
                 Console.WriteLine("No seed data cars could be added due to storage capacity.");
             }
@@ -160,7 +184,7 @@ namespace Lab_6
 
         static void DemonstrateBehaviour()
         {
-            if (cars.Length == 0)
+            if (cars.Count == 0)
             {
                 Console.WriteLine("No cars yet.");
                 return;
@@ -172,7 +196,7 @@ namespace Lab_6
 
             do
             {
-                int userInputIndex = InputInt("Select car number to interact (0 to back to main menu): ", InputType.With, 0, cars.Length);
+                int userInputIndex = InputInt("Select car number to interact (0 to back to main menu): ", InputType.With, 0, cars.Count);
                 if (userInputIndex == 0) return;
                 selectedCarIndex = userInputIndex - 1;
                 break;
@@ -183,7 +207,7 @@ namespace Lab_6
 
         static void MenuAddCar()
         {
-            if (cars.Length >= maxCapacity)
+            if (cars.Count >= maxCapacity)
             {
                 Console.WriteLine("The object storage is full. Cannot add more cars.");
                 return;
@@ -199,9 +223,7 @@ namespace Lab_6
 
             if (choice == 1)
             {
-
-                Array.Resize(ref cars, cars.Length + 1);
-                cars[cars.Length - 1] = new Car();
+                cars.Add(new Car());
 
                 while (true)
                 {
@@ -209,7 +231,7 @@ namespace Lab_6
 
                     try
                     {
-                        cars[cars.Length - 1].Mark = mark;
+                        cars[cars.Count - 1].Mark = mark;
                         break;
 
                     }
@@ -223,7 +245,7 @@ namespace Lab_6
                 {
                     try
                     {
-                        cars[cars.Length - 1].Model = InputString("Enter the cars model: ");
+                        cars[cars.Count - 1].Model = InputString("Enter the cars model: ");
                         break;
                     }
                     catch (ArgumentException ex)
@@ -236,7 +258,7 @@ namespace Lab_6
                 {
                     try
                     {
-                        cars[cars.Length - 1].Color = (Color)InputInt("Choose the cars color:\n0. Red\n1. Blue\n2. Green\n3. Black\n4. White\n5. Grey\nYour choice: ");
+                        cars[cars.Count - 1].Color = (Color)InputInt("Choose the cars color:\n0. Red\n1. Blue\n2. Green\n3. Black\n4. White\n5. Grey\nYour choice: ");
                         break;
                     }
                     catch (ArgumentException ex)
@@ -250,7 +272,7 @@ namespace Lab_6
                     int numberOfDoors = InputInt("Enter the number of doors: ");
                     try
                     {
-                        cars[cars.Length - 1].NumberOfDoors = numberOfDoors;
+                        cars[cars.Count - 1].NumberOfDoors = numberOfDoors;
                         break;
                     }
                     catch (ArgumentException ex)
@@ -263,7 +285,7 @@ namespace Lab_6
                 {
                     try
                     {
-                        cars[cars.Length - 1].HorsePower = (float)InputDouble("Enter the car's horse power: ");
+                        cars[cars.Count - 1].HorsePower = (float)InputDouble("Enter the car's horse power: ");
                         break;
                     }
                     catch (ArgumentException ex)
@@ -276,7 +298,7 @@ namespace Lab_6
                 {
                     try
                     {
-                        cars[cars.Length - 1].Weight = (decimal)InputDouble("Enter the car's weight (kg): ");
+                        cars[cars.Count - 1].Weight = (decimal)InputDouble("Enter the car's weight (kg): ");
                         break;
                     }
                     catch (ArgumentException ex)
@@ -289,7 +311,7 @@ namespace Lab_6
                 {
                     try
                     {
-                        cars[cars.Length - 1].Milage = InputDouble("Enter the car's milage (km): ");
+                        cars[cars.Count - 1].Milage = InputDouble("Enter the car's milage (km): ");
                         break;
                     }
                     catch (ArgumentException ex)
@@ -302,7 +324,7 @@ namespace Lab_6
                 {
                     try
                     {
-                        cars[cars.Length - 1].FuelConsumptionPer100km = (double)InputDouble("Enter the car's fuel consumption (l/100km): ");
+                        cars[cars.Count - 1].FuelConsumptionPer100km = (double)InputDouble("Enter the car's fuel consumption (l/100km): ");
                         break;
                     }
                     catch (ArgumentException ex)
@@ -315,7 +337,7 @@ namespace Lab_6
                 {
                     try
                     {
-                        cars[cars.Length - 1].FuelCapacity = InputDouble("Enter the car's fuel capacity (l): ");
+                        cars[cars.Count - 1].FuelCapacity = InputDouble("Enter the car's fuel capacity (l): ");
                         break;
                     }
                     catch (ArgumentException ex)
@@ -328,7 +350,7 @@ namespace Lab_6
                 {
                     try
                     {
-                        cars[cars.Length - 1].ProductionDate = InputDateTime("Enter the cars production date: ");
+                        cars[cars.Count - 1].ProductionDate = InputDateTime("Enter the cars production date: ");
                         break;
                     }
                     catch (ArgumentException ex)
@@ -337,7 +359,7 @@ namespace Lab_6
                     }
                 }
 
-                Console.WriteLine($"Car {cars[cars.Length - 1].MarkAndModel} added successfully.");
+                Console.WriteLine($"Car {cars[cars.Count - 1].MarkAndModel} added successfully.");
             }
             else if (choice == 2)
             {
@@ -346,8 +368,7 @@ namespace Lab_6
                 Car temp;
                 if (Car.TryParse(data, out temp))
                 {
-                    Array.Resize(ref cars, cars.Length + 1);
-                    cars[cars.Length - 1] = temp;
+                    cars.Add(temp);
                     Console.WriteLine("Car added successfully using TryParse.");
                 }
                 else
@@ -374,8 +395,7 @@ namespace Lab_6
                 }
                 if (temp != null)
                 {
-                    Array.Resize(ref cars, cars.Length + 1);
-                    cars[cars.Length - 1] = temp;
+                    cars.Add(temp);
 
                     Console.WriteLine("Car added successfully with default parameters");
                 }
@@ -406,34 +426,24 @@ namespace Lab_6
                 }
                 if (temp != null)
                 {
-                    Array.Resize(ref cars, cars.Length + 1);
-                    cars[cars.Length - 1] = temp;
+                    cars.Add(temp);
 
                     Console.WriteLine("Car added successfully with default parameters");
                 }
             }
             else if (choice == -1) return;
-        }
-
-        static string AddCar(string mark, string model, Color color, float horsePower, decimal weight, double milage, double fuelConsumption, double fuelCapacity, DateTime productiDate, int numberOfDoors)
-        {
-            Array.Resize(ref cars, cars.Length + 1);
-
-            cars[cars.Length - 1] = new Car(mark, model, color, horsePower, weight, milage, fuelCapacity, productiDate, fuelConsumption, numberOfDoors);
-
-            return "Car added successfully";
-        }
+        } 
 
         static void ShowAllCars()
         {
-            if (cars.Length == 0)
+            if (cars.Count == 0)
             {
                 Console.WriteLine("No cars yet...");
                 return;
             }
 
             PrintHeader();
-            for (int i = 0; i < cars.Length; i++)
+            for (int i = 0; i < cars.Count; i++)
             {
                 PrintCarLine(i + 1, cars[i]);
             }
@@ -442,27 +452,25 @@ namespace Lab_6
 
         static void SearchCars()
         {
-            if (cars.Length == 0)
+            if (cars.Count == 0)
             {
                 Console.WriteLine("No cars yet...");
                 return;
             }
 
             int choose = Menu.DisplayMenu("Search by: ", new[] { "Mark and Model", "Color" }, showHowToUse: false, allowLooping: false, boxItems:false);
-
+            List<Car> foundCars = new List<Car>();
             bool anyFound = false;
 
             if (choose == 1)
             {
                 string text = InputString("Enter part of mark/model: ");
                 PrintHeader();
-                for (int i = 0; i < cars.Length; i++)
+                foundCars = cars.FindAll(car => car.MarkAndModel.ToLower().Contains(text.ToLower()));
+                foreach (Car car in foundCars)
                 {
-                    if (cars[i].MarkAndModel.ToLower().Contains(text.ToLower()))
-                    {
-                        PrintCarLine(i + 1, cars[i]);
-                        anyFound = true;
-                    }
+                    PrintCarLine(cars.IndexOf(car) + 1, car);
+                    anyFound = true;
                 }
             }
             else
@@ -470,13 +478,11 @@ namespace Lab_6
                 int colorVal = InputInt("Choose color:\n0. Red\n1. Blue\n2. Green\n3. Black\n4. White\n5. Grey\nYour choice: ", InputType.With, 0, 5);
                 Color searchColor = (Color)colorVal;
                 PrintHeader();
-                for (int i = 0; i < cars.Length; i++)
+                foundCars = cars.FindAll(car => car.Color == searchColor);
+                foreach (Car car in foundCars)
                 {
-                    if (cars[i].Color == searchColor)
-                    {
-                        PrintCarLine(i + 1, cars[i]);
-                        anyFound = true;
-                    }
+                    PrintCarLine(cars.IndexOf(car) + 1, car);
+                    anyFound = true;
                 }
             }
 
@@ -488,87 +494,61 @@ namespace Lab_6
 
         static void RemoveCar()
         {
-            if (cars.Length == 0)
+            if (cars.Count == 0)
             {
                 Console.WriteLine("No cars yet...");
                 return;
             }
 
-            string removedNamesString = "";
-            int itemsRemovedCount = 0;
+            List<Car> itemsToRemove = new List<Car>();
 
             switch (Menu.DisplayMenu("Remove by: ", new[] { "Mark and Model", "Color", "Index" }, showHowToUse: false, allowLooping: false, boxItems: false))
             {
                 case 1:
                     string searchText = InputString("Enter search prompt of mark/model: ");
-                    for (int i = 0; i < cars.Length - itemsRemovedCount; i++)
-                    {
-                        if (cars[i].MarkAndModel.ToLower().Contains(searchText.ToLower()))
-                        {
-                            if (removedNamesString == "") removedNamesString = cars[i].MarkAndModel;
-                            else removedNamesString += ", " + cars[i].MarkAndModel;
+                    itemsToRemove = cars.FindAll(car => car.MarkAndModel.ToLower().Contains(searchText.ToLower()));
 
-                            itemsRemovedCount++;
-
-                            for (int j = i; j < cars.Length - 1; j++)
-                            {
-                                cars[j] = cars[j + 1];
-                            }
-                            i--;
-                        }
-                    }
+                    cars.RemoveAll(car => car.MarkAndModel.ToLower().Contains(searchText.ToLower()));                        //не кайф
                     break;
 
                 case 2:
                     int colorVal = InputInt("Choose color:\n0. Red\n1. Blue\n2. Green\n3. Black\n4. White\n5. Grey\nYour choice: ", InputType.With, 0, 5);
                     Color searchColor = (Color)colorVal;
-                    for (int i = 0; i < cars.Length - itemsRemovedCount; i++)
-                    {
-                        if (cars[i].Color == searchColor)
-                        {
-                            if (removedNamesString == "") removedNamesString = cars[i].MarkAndModel;
-                            else removedNamesString += ", " + cars[i].MarkAndModel;
+                    itemsToRemove = cars.FindAll(car => car.Color == searchColor);
 
-                            itemsRemovedCount++;
-
-                            for (int j = i; j < cars.Length - 1; j++)
-                            {
-                                cars[j] = cars[j + 1];
-                            }
-                            i--;
-                        }
-                    }
+                    cars.RemoveAll(car => car.Color == searchColor);
                     break;
 
                 case 3:
                     ShowAllCars();
-                    int indexToDelete = InputInt("Enter index of car to remove (or 0 to cancel): ", InputType.With, 0, cars.Length);
+                    int indexToDelete = InputInt("Enter index of car to remove (or 0 to cancel): ", InputType.With, 0, cars.Count);
                     if (indexToDelete == 0)
                     {
                         Console.WriteLine("Removal cancelled");
                         return;
                     }
 
-                    removedNamesString = cars[indexToDelete - 1].MarkAndModel;
-                    itemsRemovedCount = 1;
+                    itemsToRemove.Add(cars[indexToDelete - 1]); 
 
-                    for (int i = indexToDelete - 1; i < cars.Length - 1; i++)
-                    {
-                        cars[i] = cars[i + 1];
-                    }
+                    cars.RemoveAt(indexToDelete - 1);
                     break;
             }
 
-            if (itemsRemovedCount == 0)
+            if (itemsToRemove.Count == 0)
             {
                 Console.WriteLine("No cars found matching the criteria for removal...");
                 return;
             }
 
-            Array.Resize(ref cars, cars.Length - itemsRemovedCount);
-            Car.Count -= itemsRemovedCount;
+            Car.Count -= itemsToRemove.Count;
+            string carList = "";
+            foreach (Car car in itemsToRemove)
+            {
+                carList += car.MarkAndModel + ", ";
+            }
+            carList = carList.Substring(0, carList.Length - 2);
 
-            MessageBox.Show($"Removed the following cars: {removedNamesString}. Total cars remaining: {cars.Length}");
+            MessageBox.Show($"Removed the following cars: {carList}. Total cars remaining: {cars.Count}");
         }
 
         static void InteractWithCar(Car carSel)
@@ -594,6 +574,8 @@ namespace Lab_6
 
                     switch (action)
                     {
+                        case -1:
+                            return;
                         case 1:
                             Console.WriteLine(carSel.StartEnige());
                             break;
