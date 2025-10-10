@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Lab_5\Lab_5.csproj" />
+    <ProjectReference Include="..\..\..\Source\Repos\Lab_6_OOP\Lab_6\Lab_6.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,4 +1,8 @@
-﻿using Lab_5;
+﻿using Lab_6;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
+using Microsoft.VisualStudio.TestPlatform.TestHost;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 
 namespace CarClassTest
 {
@@ -26,14 +30,15 @@ namespace CarClassTest
         #region Methods testing
 
         [TestMethod()]
+        [DoNotParallelize]  
         public void CarStaticStatisticsTest()
         {
             //Arrange
             int expectedCount = 1;
             double expectedConsumedFuel = 0.8;
             double expectedMilage = 10;
-            double expectedConsumedFuelPrice = 1.6;
-            string expectedCountres = "Total consumed fuel price: 1,6$. Total fuel consumption: 0,8 liters. Total milage: 10 km.";
+            double expectedConsumedFuelPrice = 8;
+            string expectedCountres = "Total consumed fuel price: 8$. Total fuel consumption: 0,8 liters. Total milage: 10 km.";
             Car.Count=0;
             Car car = new Car("Temp", "Temp", Color.Black);
 
@@ -101,6 +106,7 @@ namespace CarClassTest
         }
 
         [TestMethod()]
+        [DoNotParallelize]
         public void CarStaticCountTest()
         {
             //Arrange
@@ -1010,6 +1016,76 @@ namespace CarClassTest
 
             //Assert
         }
-        #endregion   
+        #endregion
+    }
+
+    [TestClass()]
+    [DoNotParallelize]       //многопоточность для статики не очень хорошо работает (ОЧЕНЬ ОЧЕНЬ ОЧЕНЬ ОЧЕНЬ ОЧЕНЬ ПЛОХО!!!!!!!!)
+    public sealed class ProgramTest
+    {
+        private const int TotalSeedItems = 5;
+
+        [TestInitialize()]
+        public void Initialize()
+        {
+            Lab_6.Program.maxCapacity = 100;
+            Lab_6.Program.cars = new List<Car>();
+            Car.Count = 0;
+            Car.ResetCountres();
+        }
+
+        [TestCleanup()]
+        public void Cleanup()
+        {
+            Lab_6.Program.cars.Clear();
+            Lab_6.Program.maxCapacity = 0;
+            Car.Count = 0;
+            Car.ResetCountres();
+        }
+
+        [TestMethod()]
+        public void AddSeedData_AddsAllFiveCars()
+        {
+            Lab_6.Program.maxCapacity = 5;
+            int expectedCarsAdded = TotalSeedItems;
+
+            Lab_6.Program.AddSeedData();
+
+            int finalCount = Lab_6.Program.cars.Count;
+            Assert.AreEqual(expectedCarsAdded, finalCount);
+            Assert.AreEqual(expectedCarsAdded, Car.Count);
+        }
+
+        [TestMethod()]
+        public void AddSeedData_RespectsMaxCapacity()
+        {
+            Lab_6.Program.maxCapacity = 3;
+            int expectedFinalCount = 3;
+
+            Lab_6.Program.AddSeedData();
+
+            int finalCount = Lab_6.Program.cars.Count;
+            Assert.AreEqual(expectedFinalCount, finalCount);
+            Assert.AreEqual(expectedFinalCount, Car.Count);
+        }
+
+        [TestMethod()]
+        public void AddSeedData_WhenFull_NoMoreAdded()
+        {
+            Lab_6.Program.maxCapacity = 2;
+
+            Lab_6.Program.AddSeedData();
+
+            int initialCount = Lab_6.Program.cars.Count;
+            Assert.AreEqual(2, initialCount);
+
+            Lab_6.Program.AddSeedData();
+
+            int finalCount = Lab_6.Program.cars.Count;
+            int expectedFinalCount = initialCount;
+
+            Assert.AreEqual(expectedFinalCount, finalCount);
+            Assert.AreEqual(expectedFinalCount, Car.Count);
+        }
     }
 }
