@@ -5,7 +5,7 @@ VisualStudioVersion = 17.14.36414.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lab_6", "Lab_6\Lab_6.csproj", "{4924ED25-82ED-4FC3-9F3F-80206EFD16D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarClassTest", "..\..\..\Desktop\Lab_6\CarClassTest\CarClassTest.csproj", "{E8A51B36-F9EA-CEEE-4A06-7D40A26F0821}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarClassTest", "CarClassTest\CarClassTest.csproj", "{E8A51B36-F9EA-CEEE-4A06-7D40A26F0821}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

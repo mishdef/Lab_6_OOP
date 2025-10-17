@@ -15,9 +15,6 @@ namespace Lab_6
             MessageBox.SelectedButtonBgColor = ConsoleColor.Gray;
             MessageBox.SelectedButtonFgColor = ConsoleColor.Black;
             Console.OutputEncoding = System.Text.Encoding.UTF8;
-            Console.WindowWidth = 160;
-            Console.WindowHeight = 50;
-            Console.BufferWidth = 160;
 
             bool firstRun = true;
 
